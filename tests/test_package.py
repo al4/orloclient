@@ -13,8 +13,8 @@ client = MockOrloClient('http://dummy.example.com')
 
 class TestPackage(OrloClientTest):
     def setUp(self):
-        self.rid = client.example_release_dict['id']
-        self.pid = client.example_package_dict['id']
+        self.rid = client.mock_releases[0].id
+        self.pid = client.mock_packages[0].id
         self.release = Release(client, self.rid)
         self.package = self.release.packages[0]
 
@@ -32,15 +32,14 @@ class TestPackage(OrloClientTest):
         self.assertIsInstance(self.package.stime,
                               arrow.arrow.Arrow)
         self.assertEqual(self.package.stime,
-                         arrow.get(client.example_package_dict['stime']))
+                         arrow.get(client.mock_packages[0].stime))
 
     def test_package_ftime(self):
         self.assertIsInstance(self.package.ftime,
                               arrow.arrow.Arrow)
         self.assertEqual(self.package.ftime,
-                         arrow.get(client.example_package_dict['ftime']))
+                         arrow.get(client.mock_packages[0].ftime))
 
     def test_package_duration_int(self):
         self.assertIsInstance(self.package.duration, int)
-        self.assertEqual(self.package.duration,
-                         client.example_package_dict['duration'])
+        self.assertEqual(self.package.duration, 0)

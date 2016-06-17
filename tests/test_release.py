@@ -1,6 +1,6 @@
 from __future__ import print_function
 from tests import OrloClientTest
-from orloclient.mock_orlo import MockOrloClient
+from orloclient.mock_orlo import MockOrloClient, mock_release_dict
 from orloclient import Release, Package
 from orloclient.exceptions import OrloClientError
 import arrow
@@ -17,7 +17,7 @@ Tests of the Release class use the mock client
 
 class TestRelease(OrloClientTest):
     def setUp(self):
-        self.release_id = client.example_release_dict['id']
+        self.release_id = client.mock_releases[0].id
         self.release = Release(client, self.release_id)
 
     def test_release_id(self):
@@ -42,34 +42,38 @@ class TestRelease(OrloClientTest):
         self.assertIsInstance(self.release.stime,
                               arrow.arrow.Arrow)
         self.assertEqual(self.release.stime,
-                         arrow.get(client.example_release_dict['stime']))
+                         arrow.get(client.mock_releases[0].stime))
 
     def test_release_ftime(self):
         self.assertIsInstance(self.release.ftime,
                               arrow.arrow.Arrow)
         self.assertEqual(self.release.ftime,
-                         arrow.get(client.example_release_dict['ftime']))
+                         arrow.get(client.mock_releases[0].ftime))
 
     def test_release_meta(self):
         self.assertIsInstance(self.release.metadata, dict)
         self.assertEqual(self.release.metadata,
-                         client.example_release_dict['metadata'])
+                         client.mock_releases[0].metadata)
 
     def test_release_platforms(self):
         self.assertIsInstance(self.release.platforms, list)
         self.assertEqual(self.release.platforms,
-                         client.example_release_dict['platforms'])
+                         client.mock_releases[0].platforms)
 
     def test_release_duration_int(self):
         self.assertIsInstance(self.release.duration, int)
         self.assertEqual(self.release.duration,
-                         client.example_release_dict['duration'])
+                         client.mock_releases[0].duration)
 
     def test_release_when_value_none(self):
         """
         Test that we get NoneType when a value is None
+
+        This looks simple, but in the background the Release's __getattr__
+        is calling the mock's client.get_json, which reads mock_release_dict
         """
-        client.example_release_dict['none_attribute'] = None
+        from orloclient.mock_orlo import mock_release_dict
+        mock_release_dict['none_attribute'] = None
         self.assertIs(self.release.none_attribute, None)
 
     def test_release_packages_list(self):
